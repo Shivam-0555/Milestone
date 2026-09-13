@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -30,4 +32,19 @@ public class Quest {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User owner;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private QuestStatus status = QuestStatus.ACTIVE;
+
+    private LocalDate completedAt;
+
+    private String category;
+
+    private String difficulty;
+
+    private String icon;
+
+    @Column(nullable = false)
+    private Integer progress = 0;
 }

@@ -19,6 +19,11 @@ public class QuestController {
     @Autowired
     private QuestService questService;
 
+    @GetMapping("/heatmap")
+    public ResponseEntity<List<com.milestone.dto.HeatmapEntry>> getHeatmap() {
+        return ResponseEntity.ok(questService.getHeatmap());
+    }
+
     @GetMapping
     public ResponseEntity<List<QuestResponse>> getAll() {
         List<Quest> quests = questService.getUserQuests();
@@ -50,5 +55,10 @@ public class QuestController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         questService.deleteQuest(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/complete")
+    public ResponseEntity<com.milestone.dto.QuestCompletionResponse> complete(@PathVariable Long id) {
+        return ResponseEntity.ok(questService.completeQuest(id));
     }
 }

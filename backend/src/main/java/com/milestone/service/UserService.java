@@ -33,4 +33,26 @@ public class UserService {
         user.setRoles(roles);
         return userRepository.save(user);
     }
+
+    public User updateUser(User user, com.milestone.dto.UpdateUserRequest request) {
+        if (request.getUsername() != null && !request.getUsername().isEmpty()) {
+            if (!user.getUsername().equals(request.getUsername()) && userRepository.existsByUsername(request.getUsername())) {
+                throw new IllegalArgumentException("Username already in use");
+            }
+            user.setUsername(request.getUsername());
+        }
+        if (request.getEmail() != null && !request.getEmail().isEmpty()) {
+            if (!user.getEmail().equals(request.getEmail()) && userRepository.existsByEmail(request.getEmail())) {
+                throw new IllegalArgumentException("Email already in use");
+            }
+            user.setEmail(request.getEmail());
+        }
+        if (request.getNewPassword() != null && !request.getNewPassword().isEmpty()) {
+            if (request.getCurrentPassword() == null || !passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+                throw new IllegalArgumentException("Invalid current password");
+            }
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        }
+        return userRepository.save(user);
+    }
 }
