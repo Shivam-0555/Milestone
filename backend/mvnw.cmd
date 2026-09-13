@@ -1,14 +1,28 @@
 @echo off
 setlocal
-set MAVEN_WRAPPER_VERSION=0.5.6
-set WRAPPER_JAR=.mvn\wrapper\maven-wrapper.jar
-set WRAPPER_URL=https://repo.maven.apache.org/maven2/io/takari/maven-wrapper/%MAVEN_WRAPPER_VERSION%/maven-wrapper-%MAVEN_WRAPPER_VERSION%.jar
 
-if not exist "%WRAPPER_JAR%" (
-  echo Downloading Maven Wrapper...\r
-  md .mvn\wrapper
-  powershell -Command "Invoke-WebRequest -Uri %WRAPPER_URL% -OutFile %WRAPPER_JAR%"
+set MAVEN_HOME=
+set WRAPPER_PROPERTIES=.mvn\wrapper\maven-wrapper.properties
+
+rem Try to find Maven distribution
+for /f "tokens=2 delims==" %%a in ('findstr "distributionUrl" "%WRAPPER_PROPERTIES%"') do set DIST_URL=%%a
+set DIST_URL=%DIST_URL:\=%
+
+rem Check if Maven is already downloaded
+set MAVEN_USER_HOME=%USERPROFILE%\.m2\wrapper\dists
+if not exist "%MAVEN_USER_HOME%" mkdir "%MAVEN_USER_HOME%"
+
+rem Extract version from URL
+set MAVEN_VERSION=3.9.6
+set MAVEN_DIR=%MAVEN_USER_HOME%\apache-maven-%MAVEN_VERSION%
+
+if not exist "%MAVEN_DIR%\bin\mvn.cmd" (
+    echo Downloading Apache Maven %MAVEN_VERSION%...
+    set MAVEN_ZIP=%MAVEN_USER_HOME%\apache-maven-%MAVEN_VERSION%-bin.zip
+    powershell -Command "Invoke-WebRequest -Uri 'https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/%MAVEN_VERSION%/apache-maven-%MAVEN_VERSION%-bin.zip' -OutFile '%MAVEN_USER_HOME%\apache-maven-%MAVEN_VERSION%-bin.zip' -UseBasicParsing"
+    powershell -Command "Expand-Archive -Path '%MAVEN_USER_HOME%\apache-maven-%MAVEN_VERSION%-bin.zip' -DestinationPath '%MAVEN_USER_HOME%' -Force"
+    del "%MAVEN_USER_HOME%\apache-maven-%MAVEN_VERSION%-bin.zip" 2>nul
 )
 
-java -jar "%WRAPPER_JAR%" %*
+"%MAVEN_DIR%\bin\mvn.cmd" %*
 endlocal
